@@ -1,0 +1,16 @@
+package com.kodlama.io.northwind.business.responses;
+
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateOrderResponse {
+
+	private int id;
+	private LocalDate date;
+	private int employeeId;
+}
