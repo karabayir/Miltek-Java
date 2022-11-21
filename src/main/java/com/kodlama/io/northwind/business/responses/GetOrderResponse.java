@@ -12,5 +12,5 @@ public class GetOrderResponse {
 	private int orderId;
 	private LocalDate date;
 	private int employeeId;
-	private String nameSurname;
+	private String employeeFirstName;
 }

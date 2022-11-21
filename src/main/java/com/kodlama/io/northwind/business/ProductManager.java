@@ -13,9 +13,10 @@ import com.kodlama.io.northwind.business.responses.CreateProductResponse;
 import com.kodlama.io.northwind.business.responses.GetAllProductResponse;
 import com.kodlama.io.northwind.business.responses.GetProductResponse;
 import com.kodlama.io.northwind.business.responses.UpdateProductResponse;
+import com.kodlama.io.northwind.core.utilities.mapping.ModelMapperService;
 import com.kodlama.io.northwind.dataAccess.ProductRepository;
-import com.kodlama.io.northwind.entities.Category;
 import com.kodlama.io.northwind.entities.Product;
+import com.kodlama.io.northwind.exception.ApiRequestException;
 
 import lombok.AllArgsConstructor;
 
@@ -24,67 +25,46 @@ import lombok.AllArgsConstructor;
 public class ProductManager implements ProductService {
 
 	private final ProductRepository productRepository;
+	private final ModelMapperService mapperService;
 
 
 	@Override
 	public List<GetAllProductResponse> getAll() {
 		
+		
 	 return	productRepository.findAll()
 		.stream()
-		.map(p-> new GetAllProductResponse(
-				p.getId(), 
-				p.getName(), 
-				p.getCategory().
-				getName(), 
-				p.getUnitsInStock(), 
-				p.getUnitPrice()))
+		.map(p-> 
+				mapperService.forResponse().map(p, GetAllProductResponse.class))
+				
 		.collect(Collectors.toList());
 	}
 
 	@Override
 	public CreateProductResponse add(CreateProductRequest request) {
-		Product product = new Product();
-		Category category = new Category();
 		
-		category.setId(request.getCategoryId());
-		
-		product.setName(request.getName());
-		product.setUnitPrice(request.getUnitPrice());
-		product.setUnitsInStock(request.getUnitsInStock());
-		product.setCategory(category);
-		
+		Product product = mapperService.forRequest().map(request, Product.class);
 		productRepository.save(product);
 		
-		return new CreateProductResponse(
-				product.getId(), 
-				product.getCategory().
-				getId(), 
-				product.getUnitsInStock(), 
-				product.getName(), 
-				product.getUnitPrice());
+		return mapperService.forResponse().map(product, CreateProductResponse.class);
+				
 	}
 
 	@Override
 	public GetProductResponse getByName(GetProductRequest request) {
-		Product product = productRepository.findByName(request.getProductName());
+		Product product = productRepository
+				.findByName(request.getProductName()).orElseThrow(()-> new ApiRequestException(request.getProductName()+" ismine ait bir product yok xd"));
 		
-		return new GetProductResponse(
-				product.getId(), 
-				product.getName(), 
-				product.getCategory().getName(), 
-				product.getUnitsInStock(), 
-				product.getUnitPrice()) ;
+		return mapperService.forResponse().map(product, GetProductResponse.class);
+		 
 	}
 
 	@Override
 	public GetProductResponse getById(GetProductRequest request) {
-		Product product = productRepository.findById(request.getProductId()).orElseThrow();
-		return new GetProductResponse(
-				product.getId(), 
-				product.getName(), 
-				product.getCategory().getName(), 
-				product.getUnitsInStock(), 
-				product.getUnitPrice()) ;
+		Product product = productRepository
+				.findById(request.getProductId()).orElseThrow(()-> new ApiRequestException(request.getProductId()+" numaralı id ye ait bir product yok xd"));
+		
+		return mapperService.forResponse().map(product, GetProductResponse.class);
 	}
 
 	@Override
@@ -94,37 +74,19 @@ public class ProductManager implements ProductService {
 
 	@Override
 	public UpdateProductResponse updateProductById(UpdateProductRequest request) {
-		Product product = new Product();
+		Product product = mapperService.forRequest().map(request, Product.class);
 		product.setId(request.getProductId());
-		
-		Category category = new Category();
-		category.setId(request.getCategoryId());
-		
-		product.setName(request.getName());
-		product.setUnitPrice(request.getUnitPrice());
-		product.setUnitsInStock(request.getUnitsInStock());
-		product.setCategory(category);
-		
 		productRepository.save(product);
 		
-		return new UpdateProductResponse(
-				product.getId(), 
-				product.getCategory().getId(), 
-				product.getUnitsInStock(), 
-				product.getName(),
-				product.getUnitPrice());
+		return mapperService.forResponse().map(product, UpdateProductResponse.class);
 	}
 
 	@Override
 	public List<GetAllProductResponse> findByNameToList(GetProductRequest request) {
 		
 		return productRepository.getByName(request.getProductName())
-				.stream().map(p-> new GetAllProductResponse(
-						p.getId(), 
-						p.getName(), 
-						p.getCategory().getName(), 
-						p.getUnitsInStock(), 
-						p.getUnitPrice()))
+				.stream().
+				map(p-> mapperService.forResponse().map(p, GetAllProductResponse.class))
 				.collect(Collectors.toList());
 	}
 	

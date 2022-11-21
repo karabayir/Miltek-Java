@@ -13,6 +13,6 @@ public class GetAllProductResponse {
 	private String name;
 	private String categoryName;
 	private int unitsInStocks;
-	private double unitPrice;
+	//private double unitPrice;
 
 }

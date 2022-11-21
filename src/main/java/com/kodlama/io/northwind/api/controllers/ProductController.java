@@ -48,7 +48,7 @@ public class ProductController {
 		return productService.add(request);
 	}
 	
-	@PutMapping("updateProduct/{id}")
+	@PutMapping("updateProduct")
 	public UpdateProductResponse updateProductById(UpdateProductRequest request) {
 		return productService.updateProductById(request);
 	}

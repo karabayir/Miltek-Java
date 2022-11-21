@@ -14,4 +14,5 @@ public class GetCategoryResponse {
 	private int id;
 	private String name;
 	private List<GetAllProductResponse> products;
+	
 }

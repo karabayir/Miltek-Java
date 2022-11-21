@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateProductRequest {
 
-	int productId;
+	private int productId;
+	private int categoryId;
 	private String name;
 	private double unitPrice;
 	private int unitsInStock;
-	private int categoryId;
 }
